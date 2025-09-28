@@ -1,0 +1,56 @@
+{
+  "name": "@codex/agent-sdk",
+  "version": "0.1.0",
+  "description": "TypeScript Agent SDK for Codex-based automation.",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts",
+    "clean": "rimraf dist",
+    "dev": "vitest watch",
+    "lint": "eslint \"src/**/*.ts\"",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "agent",
+    "codex",
+    "sdk",
+    "workflow"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@openai/codex": "^0.42.0",
+    "pino": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.2",
+    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "@typescript-eslint/parser": "^7.16.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.1",
+    "prettier": "^3.3.2",
+    "rimraf": "^5.0.5",
+    "tsup": "^7.2.0",
+    "tsx": "^4.15.3",
+    "typescript": "^5.5.4",
+    "vitest": "^1.6.0"
+  }
+}
