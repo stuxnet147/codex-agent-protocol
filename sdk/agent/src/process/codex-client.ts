@@ -150,6 +150,28 @@ export class CodexClient extends EventEmitter {
     });
   }
 
+  async send(payload: Record<string, unknown>): Promise<void> {
+    if (!this.supervisor.isRunning()) {
+      await this.start();
+    }
+
+    const child = this.supervisor.getChild();
+    if (!child) {
+      throw new Error("Codex CLI process is not available.");
+    }
+
+    const serialized = JSON.stringify(payload);
+    await new Promise<void>((resolve, reject) => {
+      child.stdin.write(serialized + "\n", (error) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
   private attachChild(child: ChildProcessWithoutNullStreams): void {
     this.detachChild();
     this.reader = createInterface({ input: child.stdout });
@@ -157,10 +179,11 @@ export class CodexClient extends EventEmitter {
       this.handleLine(line);
     });
     child.stderr.on("data", (chunk) => {
-      const text = chunk.toString("utf-8");
-      const error = new Error(text.trim() || "Codex CLI stderr output.");
-      this.emit("protocolError", error);
-      this.failInflight(error);
+      const text = chunk.toString("utf-8").trim();
+      if (text.length === 0) {
+        return;
+      }
+      this.emit("notification", { type: "stderr", message: text });
     });
     child.stdin.on("error", (error) => {
       const wrapped = this.coerceError(error);
@@ -178,13 +201,18 @@ export class CodexClient extends EventEmitter {
   }
 
   private handleLine(line: string): void {
-    if (line.trim().length === 0) {
+    const sanitized = line.replace(/\u001b\[[0-9;]*m/g, "").trim();
+    if (sanitized.length === 0) {
       return;
     }
 
     let parsed: unknown;
     try {
-      parsed = JSON.parse(line);
+      if (!sanitized.startsWith("{") && !sanitized.startsWith("[")) {
+        this.emit("notification", { type: "log", message: sanitized });
+        return;
+      }
+      parsed = JSON.parse(sanitized);
     } catch (error) {
       const wrapped = new Error(
         "Failed to parse Codex CLI response: " + String(error)
@@ -210,6 +238,7 @@ export class CodexClient extends EventEmitter {
 
     const pendingRequest = this.pending.get(message.id);
     if (!pendingRequest) {
+      this.emit("notification", message);
       return;
     }
 

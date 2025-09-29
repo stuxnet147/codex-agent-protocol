@@ -10,3 +10,5 @@ export * from "./context/prompt-packer.js";
 export * from "./telemetry/telemetry.js";
 export * from "./security/security-guard.js";
 export * from "./integration/integration-host.js";
+export * from "./protocol/agent-protocol-adapter.js";
+export * from "./protocol/codex-protocol-adapter.js";
