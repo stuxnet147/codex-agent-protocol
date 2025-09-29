@@ -17,13 +17,15 @@
 ```
 
 ### Core Responsibilities
+The components below are available in both the TypeScript (`sdk/agent`) and Python (`sdk/agent-python`) SDKs to allow teams to mix runtimes while sharing the same architectural primitives.
+
 - **AgentRegistry** — Stores `AgentDefinition` + `AgentRuntimeState`, emits lifecycle events.
 - **ProcessSupervisor** — Owns the Codex child process, restarts with backoff, surfaces `started`, `exited`, `failed`, `restarted` events.
 - **CodexClient** — JSON-lines protocol adapter. Resolves CLI path via npm, tracks inflight requests, auto-starts the supervisor.
 - **MessageBus / SessionStore** — In-memory pub/sub with optional session-awareness for conversation context.
 - **WorkflowEngine** — Executes DAGs with concurrency control, retry policies, rollback hooks.
 - **ContextStore / PromptPacker** — Namespaced KV with snapshot diffing, packs payloads for LLM prompts.
-- **Telemetry** — Fan-out of Pino logs and custom sinks for metrics/alerts.
+- **Telemetry** — Fan-out of logs and custom sinks for metrics/alerts.
 - **SecurityGuard** — Enforces capability model and allowlists (fs, exec, network).
 - **IntegrationHost** — Registers pluggable adapters for external systems.
 
@@ -60,13 +62,15 @@
 ```
 
 ### 핵심 역할
+아래 구성 요소는 TypeScript(`sdk/agent`)와 Python(`sdk/agent-python`) 구현에서 모두 제공되어 언어가 달라도 동일한 아키텍처 패턴을 공유할 수 있습니다.
+
 - **AgentRegistry** — `AgentDefinition`, `AgentRuntimeState`를 저장하고 라이프사이클 이벤트를 발생시킵니다.
 - **ProcessSupervisor** — Codex 자식 프로세스를 관리하며 백오프 재시작과 `started/exited/failed/restarted` 이벤트를 제공합니다.
 - **CodexClient** — JSON 라인 프로토콜 어댑터로 npm에서 CLI 경로를 찾고, 진행 중 요청을 추적하며 필요 시 supervise를 자동 시작합니다.
 - **MessageBus / SessionStore** — 대화형 세션 정보를 유지하는 인메모리 pub/sub입니다.
 - **WorkflowEngine** — 동시성 제어, 재시도, 롤백을 지원하는 DAG 실행기입니다.
 - **ContextStore / PromptPacker** — 네임스페이스 기반 KV 저장소와 LLM 프롬프트 패킹 도구입니다.
-- **Telemetry** — Pino 로그를 외부 싱크로 전달하여 모니터링 가시성을 확보합니다.
+- **Telemetry** — 외부 싱크로 로그를 전달하여 모니터링 가시성을 확보합니다.
 - **SecurityGuard** — 파일/실행/네트워크 허용 목록과 권한 모델을 검증합니다.
 - **IntegrationHost** — 외부 시스템 연동을 위한 플러그형 어댑터를 등록합니다.
 

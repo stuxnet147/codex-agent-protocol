@@ -7,6 +7,7 @@
 3. Update `AgentRegistry` with metadata (`singleton`, `tags`, custom `resourceLimits`).
 
 ### Tool Adapters
+TypeScript:
 ```ts
 import { IntegrationHost } from "@codex/agent-sdk";
 
@@ -22,6 +23,25 @@ host.register({
 });
 
 const result = await host.invoke("github", { repo: "openai/codex", issue: 42 });
+```
+
+Python:
+```python
+import asyncio
+
+from codex_agent_protocol import Capability, IntegrationAdapter, IntegrationHost
+
+host = IntegrationHost()
+
+host.register(
+    IntegrationAdapter(
+        name="github",
+        capabilities=[Capability.NET_OUTBOUND],
+        invoke=lambda args: {"url": f"https://github.com/{args['repo']}/issues/{args['issue']}"},
+    )
+)
+
+result = asyncio.run(host.invoke("github", {"repo": "openai/codex", "issue": 42}))
 ```
 
 ### Message Routing Patterns
